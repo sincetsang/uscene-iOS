@@ -1,0 +1,109 @@
+name: UsceneNative
+options:
+  bundleIdPrefix: com.uscene.app
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+# packages:
+#   reown:
+#     url: https://github.com/reown-com/reown-swift
+#     from: 2.2.0
+targets:
+  Uscene:
+    type: application
+    platform: iOS
+    sources:
+      - path: Uscene
+    dependencies:
+      # Reown/WalletConnect: re-enable when SPM can download yttrium binaries (~500MB).
+      # See Vendor/README.md → "Enable Reown AppKit".
+      # - package: reown
+      #   product: ReownAppKit
+      # - package: reown
+      #   product: ReownAppKitUI
+      - framework: Vendor/RiveRuntime.xcframework
+        embed: true
+      # Device-only static framework (see OTHER_LDFLAGS[sdk=iphoneos*] in pbxproj).
+      # Do not embed; Simulator uses stubs in UEPayObjCBridge.
+      # - framework: Vendor/UESDKProject.framework
+      #   embed: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.uscene.app.native
+        PRODUCT_NAME: Uscene
+        INFOPLIST_FILE: Uscene/Info.plist
+        GENERATE_INFOPLIST_FILE: false
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_OBJC_BRIDGING_HEADER: Uscene/Uscene-Bridging-Header.h
+        HEADER_SEARCH_PATHS: "$(inherited) $(SRCROOT)/Uscene"
+        # DEVELOPMENT_TEAM: leave unset — do not overwrite the Team chosen in Xcode.
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_EMIT_LOC_STRINGS: YES
+        CODE_SIGN_ENTITLEMENTS: Uscene/Uscene.entitlements
+      configs:
+        Debug:
+          "OTHER_LDFLAGS[sdk=iphoneos*]": "$(inherited) -ObjC -framework UESDKProject"
+        Release:
+          "OTHER_LDFLAGS[sdk=iphoneos*]": "$(inherited) -ObjC -framework UESDKProject"
+    entitlements:
+      path: Uscene/Uscene.entitlements
+    info:
+      path: Uscene/Info.plist
+      properties:
+        CFBundleDisplayName: Uscene
+        CFBundleName: Uscene
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSLocationWhenInUseUsageDescription: We use your location to show nearby businesses or services, such as recommending restaurants around you.
+        NSLocationAlwaysAndWhenInUseUsageDescription: We use your location to show nearby businesses or services, such as recommending restaurants around you.
+        NSPhotoLibraryUsageDescription: The app accesses your photos to let you share them with your friends.
+        NSCameraUsageDescription: Allow Uscene to access your camera
+        LSApplicationQueriesSchemes:
+          - metamask
+          - trust
+          - safe
+          - rainbow
+          - uniswap
+          - wc
+          - yxhmap
+          - ue
+        CFBundleURLTypes:
+          - CFBundleURLSchemes:
+              - uscene
+              - com.uscene.app.native
+              - com.googleusercontent.apps.717254225743-lndus4rhqn6spcg0hntkgcl3igea2jfv
+              - yxhmap
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+          NSExceptionDomains:
+            api.test.uscene.ebunker.io:
+              NSExceptionAllowsInsecureHTTPLoads: true
+              NSIncludesSubdomains: true
+              NSExceptionRequiresForwardSecrecy: false
+              NSExceptionMinimumTLSVersion: TLSv1.0
+schemes:
+  Uscene:
+    build:
+      targets:
+        Uscene: all
+    run:
+      config: Debug
+      environmentVariables:
+        # Mute system / MapKit / CoreLocation / Metal chatter in Xcode console.
+        OS_ACTIVITY_MODE: disable
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

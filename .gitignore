@@ -1,0 +1,13 @@
+# Xcode / SPM
+DerivedData/
+.derivedData/
+.derivedDataSim/
+SourcePackages/
+*.xcuserdata
+*.xcuserstate
+xcuserdata/
+*.xcresult
+
+# Local caches
+.build/
+.DS_Store

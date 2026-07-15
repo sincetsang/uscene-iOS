@@ -1,0 +1,5 @@
+framework module UESDKProject {
+  umbrella header "UEApi.h"
+  export *
+  module * { export * }
+}
